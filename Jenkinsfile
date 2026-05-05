@@ -12,9 +12,9 @@ pipeline {
         stage('Deploy Containers') {
             steps {
                 bat '''
-                echo Restarting containers (no rebuild)...
+                echo Restarting containers (clean + fast)...
 
-                docker compose stop || exit 0
+                docker compose down --remove-orphans || exit 0
                 docker compose up -d || exit 1
                 '''
             }
@@ -22,7 +22,7 @@ pipeline {
 
         stage('Wait for Services') {
             steps {
-                // ~8–10 sec wait (fast demo)
+                // Fast wait (~8 seconds)
                 bat 'timeout /t 8 > nul'
             }
         }
@@ -48,13 +48,14 @@ pipeline {
 
     post {
         success {
-            echo '✅ Fast deployment successful (no rebuild)!'
+            echo '✅ Fast deployment successful (no rebuild, no port issues)!'
         }
 
         failure {
             echo '❌ Pipeline failed. Showing logs...'
-            bat 'docker logs frontend-1 || exit 0'
-            bat 'docker logs backend-1 || exit 0'
+
+            bat 'docker logs jp-frontend-1 || exit 0'
+            bat 'docker logs jp-backend-1 || exit 0'
         }
     }
 }
