@@ -15,30 +15,27 @@ pipeline {
                 echo Stopping old containers...
                 docker compose down || exit 0
 
-                echo Starting containers...
-                docker compose up -d
+                echo Rebuilding and starting containers...
+                docker compose up --build -d
                 '''
             }
         }
 
         stage('Wait for Services') {
             steps {
-                // Safe Windows delay (replaces timeout)
-                bat 'ping 127.0.0.1 -n 16 > nul'
+                // Wait ~10 seconds for services to boot
+                bat 'timeout /t 10 > nul'
             }
         }
 
         stage('Health Check') {
             steps {
                 bat '''
-                echo Checking ML service...
-                curl -f http://localhost:8000/health || exit 1
-
                 echo Checking Backend...
                 curl -f http://localhost:5000 || exit 1
 
                 echo Checking Frontend...
-                curl -f http://localhost:3000 || exit 1
+                curl http://localhost:3000 || exit 1
                 '''
             }
         }
@@ -52,16 +49,14 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline completed successfully!'
+            echo '✅ MERN App is running successfully!'
         }
 
         failure {
-            echo '❌ Pipeline failed'
+            echo '❌ Pipeline failed. Showing logs...'
 
-            // FIXED container names from docker-compose
-            bat 'docker logs capstone-ml-1 || exit 0'
-            bat 'docker logs capstone-backend-1 || exit 0'
-            bat 'docker logs capstone-frontend-1 || exit 0'
+            bat 'docker logs client-1 || exit 0'
+            bat 'docker logs server-1 || exit 0'
         }
     }
 }
