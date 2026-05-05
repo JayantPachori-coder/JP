@@ -22,8 +22,8 @@ pipeline {
 
         stage('Wait for Services') {
             steps {
-                // Fast wait (~8 seconds)
-                bat 'timeout /t 8 > nul'
+                bat 'echo Waiting for services to start...'
+                bat 'ping 127.0.0.1 -n 9 > nul'
             }
         }
 
@@ -31,10 +31,10 @@ pipeline {
             steps {
                 bat '''
                 echo Checking Backend...
-                curl -f http://localhost:5000 || exit 1
+                powershell -Command "try { Invoke-WebRequest http://localhost:5000 -UseBasicParsing } catch { exit 1 }"
 
                 echo Checking Frontend...
-                curl http://localhost:3000 || exit 1
+                powershell -Command "try { Invoke-WebRequest http://localhost:3000 -UseBasicParsing } catch { exit 1 }"
                 '''
             }
         }
