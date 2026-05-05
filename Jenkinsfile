@@ -12,19 +12,18 @@ pipeline {
         stage('Deploy Containers') {
             steps {
                 bat '''
-                echo Stopping old containers...
-                docker compose down || exit 0
+                echo Restarting containers (no rebuild)...
 
-                echo Rebuilding and starting containers...
-                docker compose up --build -d
+                docker compose stop || exit 0
+                docker compose up -d || exit 1
                 '''
             }
         }
 
         stage('Wait for Services') {
             steps {
-                // Wait ~10 seconds for services to boot
-                bat 'timeout /t 10 > nul'
+                // ~8–10 sec wait (fast demo)
+                bat 'timeout /t 8 > nul'
             }
         }
 
@@ -49,14 +48,13 @@ pipeline {
 
     post {
         success {
-            echo '✅ MERN App is running successfully!'
+            echo '✅ Fast deployment successful (no rebuild)!'
         }
 
         failure {
             echo '❌ Pipeline failed. Showing logs...'
-
-            bat 'docker logs client-1 || exit 0'
-            bat 'docker logs server-1 || exit 0'
+            bat 'docker logs frontend-1 || exit 0'
+            bat 'docker logs backend-1 || exit 0'
         }
     }
 }
