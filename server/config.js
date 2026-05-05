@@ -1,3 +1,3 @@
 module.exports = {
-  mongoURI: "mongodb://127.0.0.1:27017/mern_demo"
+  mongoURI: "mongodb://mongo:27017/mern_demo"
 };
