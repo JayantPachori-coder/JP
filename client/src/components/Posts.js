@@ -37,7 +37,7 @@ export default function Posts() {
 
   return (
     <div>
-      <h2>Posts (User → Posts)</h2>
+      <h2>User Post Here</h2>
 
       {/* CREATE POST */}
       <input
