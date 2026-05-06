@@ -23,10 +23,10 @@ export default function Posts() {
   const addPost = async () => {
     if (!title || !userId) return;
 
-    await API.post("/posts", {
-      title,
-      user: userId
-    });
+    await API.post("/users/posts", {
+  title,
+  user: userId
+});
 
     setTitle("");
     setUserId("");
