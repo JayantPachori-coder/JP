@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
+
 const Student = require("../models/Student");
 const Course = require("../models/Course");
 
-// ENROLL
 router.post("/", async (req, res) => {
   const { studentId, courseId } = req.body;
 
