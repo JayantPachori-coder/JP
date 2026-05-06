@@ -17,7 +17,6 @@ mongoose.connect(MONGO_URI)
 
 // ✅ All Routes (ONLY ONCE EACH)
 app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/posts", require("./routes/postRoutes"));
 app.use("/api/students", require("./routes/studentRoutes"));
 app.use("/api/courses", require("./routes/courseRoutes"));
 app.use("/api/enroll", require("./routes/enrollRoutes"));
