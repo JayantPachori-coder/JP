@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const User = require("../models/user");   // ✅ FIXED (capital U)
+const User = require("../models/user");
 const Post = require("../models/Post");
 
-// CREATE USER
-router.post("/users", async (req, res) => {
+// ✅ CREATE USER
+router.post("/", async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
@@ -15,7 +15,7 @@ router.post("/users", async (req, res) => {
   }
 });
 
-// CREATE POST
+// ✅ CREATE POST
 router.post("/posts", async (req, res) => {
   try {
     const post = new Post(req.body);
@@ -26,8 +26,8 @@ router.post("/posts", async (req, res) => {
   }
 });
 
-// GET USERS + POSTS
-router.get("/users", async (req, res) => {
+// ✅ GET USERS + POSTS
+router.get("/", async (req, res) => {
   try {
     const users = await User.find();
     const posts = await Post.find().populate("user");
