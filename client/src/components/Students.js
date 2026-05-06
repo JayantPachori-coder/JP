@@ -58,7 +58,7 @@ export default function Students() {
 
   return (
     <div className="container">
-      <h2>Students + Courses (Many ↔ Many)</h2>
+      <h2>Students + Courses (Many ↔ Many Relationship)</h2>
 
       {/* ADD STUDENT */}
       <div className="form">
