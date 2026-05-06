@@ -3,47 +3,27 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Clean Old Containers') {
+        stage('Deploy Containers') {
             steps {
                 bat '''
-                echo Stopping and removing old containers...
-                docker compose down --volumes --remove-orphans || exit 0
+                echo Restarting containers (clean + fast)...
+
+                docker compose down --remove-orphans || exit 0
+                docker compose up -d || exit 1
                 '''
             }
         }
 
-        stage('Build Images (FULL REBUILD)') {
+        stage('Wait for Services') {
             steps {
-                bat '''
-                echo Building fresh Docker images (NO CACHE)...
-
-                docker compose build --no-cache || exit 1
-                '''
-            }
-        }
-
-        stage('Start Containers') {
-            steps {
-                bat '''
-                echo Starting fresh containers...
-
-                docker compose up -d --force-recreate || exit 1
-                '''
-            }
-        }
-
-        stage('Wait for Startup') {
-            steps {
-                bat '''
-                echo Waiting for services to initialize...
-                timeout /t 20 /nobreak
-                '''
+                bat 'echo Waiting for services to start...'
+                bat 'ping 127.0.0.1 -n 9 > nul'
             }
         }
 
@@ -59,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Show Running Containers') {
+        stage('Verify Containers') {
             steps {
                 bat 'docker ps'
             }
@@ -68,14 +48,14 @@ pipeline {
 
     post {
         success {
-            echo '✅ FULL REBUILD DEPLOYMENT SUCCESS (READY FOR DEMO)'
+            echo '✅ Fast deployment successful (no rebuild, no port issues)!'
         }
 
         failure {
-            echo '❌ Build Failed - Showing Logs'
+            echo '❌ Pipeline failed. Showing logs...'
 
-            bat 'docker logs jp-backend-1 || exit 0'
             bat 'docker logs jp-frontend-1 || exit 0'
+            bat 'docker logs jp-backend-1 || exit 0'
         }
     }
 }
